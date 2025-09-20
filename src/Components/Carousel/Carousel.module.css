@@ -1,0 +1,15 @@
+.hero_img{
+  position: relative;
+}
+
+.hero_img::before {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero_img img {
+  display: block;
+  width: 100%;
+  height: auto;
+  z-index: 0;
+}
