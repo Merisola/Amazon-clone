@@ -30,7 +30,11 @@ function Product() {
         ) : (
           products.map((singleProduct) => {
             return (
-              <ProductCard product={singleProduct} key={singleProduct.id} />
+              <ProductCard
+                product={singleProduct}
+                key={singleProduct.id}
+                renderAdd={true}
+              />
             );
           })
         )}

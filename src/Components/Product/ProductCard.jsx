@@ -6,7 +6,7 @@ import CurrencyFormat from "../CurrencyFormat/CurrencyFormat";
 import { DataContext } from "../DataProvider/DataContext";
 import { Type } from "../../Utility/action.type";
 
-const ProductCard = ({ product, flex, renderDesc }) => {
+const ProductCard = ({ product, flex, renderDesc, renderAdd }) => {
   const { id, image, title, rating, price, description } = product;
 
   const { dispatch } = useContext(DataContext);
@@ -44,9 +44,11 @@ const ProductCard = ({ product, flex, renderDesc }) => {
         <div className={classes.price}>
           <CurrencyFormat amount={price} />
         </div>
-        <button className={classes.button} onClick={addToCart}>
-          Add to cart
-        </button>
+        {renderAdd && (
+          <button className={classes.button} onClick={addToCart}>
+            Add to cart
+          </button>
+        )}
       </div>
     </div>
   );

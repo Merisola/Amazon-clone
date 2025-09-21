@@ -15,9 +15,13 @@ function Header() {
      state: { basket }
    } = useContext(DataContext);
 
+   const totalItems = basket?.reduce((amount, item) => {
+     return amount + item.amount;
+   }, 0);
+
 
   return (
-    <>
+    <section className={classes.fixed}>
       <section>
         <div className={classes.header_container}>
           {/* Logo */}
@@ -72,14 +76,14 @@ function Header() {
             </Link>
             {/* cart */}
             <Link to="/cart" className={classes.cart}>
-              <span>{basket.length}</span>
+              <span>{totalItems}</span>
               <IoCartOutline size={35} />
             </Link>
           </div>
         </div>
       </section>
       <LowerHeader />
-    </>
+    </section>
   );
 }
 

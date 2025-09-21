@@ -44,7 +44,11 @@ function Result() {
           <div className={classes.products_container}>
             {result.length > 0 ? (
               result.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  renderAdd={true}
+                />
               ))
             ) : (
               <p style={{ padding: "30px" }}>
