@@ -5,9 +5,17 @@ import { CiLocationOn } from "react-icons/ci";
 import classes from "./Header.module.css";
 import LowerHeader from "./LowerHeader";
 import { Link } from "react-router-dom";
+import { DataContext } from "../DataProvider/DataContext";
+import { useContext } from "react";
+import { BiBasket } from "react-icons/bi";
 
 
 function Header() {
+   const {
+     state: { basket }
+   } = useContext(DataContext);
+
+
   return (
     <>
       <section>
@@ -64,7 +72,7 @@ function Header() {
             </Link>
             {/* cart */}
             <Link to="/cart" className={classes.cart}>
-              <span>0</span>
+              <span>{basket.length}</span>
               <IoCartOutline size={35} />
             </Link>
           </div>
