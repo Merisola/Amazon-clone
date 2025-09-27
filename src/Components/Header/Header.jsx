@@ -7,18 +7,18 @@ import LowerHeader from "./LowerHeader";
 import { Link } from "react-router-dom";
 import { DataContext } from "../DataProvider/DataContext";
 import { useContext } from "react";
-import { BiBasket } from "react-icons/bi";
-
+// import { BiBasket } from "react-icons/bi";
+import { auth } from "../../Utility/firebase";
+import { signOut } from "firebase/auth";
 
 function Header() {
-   const {
-     state: { basket }
-   } = useContext(DataContext);
+  const {
+    state: { user, basket },
+  } = useContext(DataContext);
 
-   const totalItems = basket?.reduce((amount, item) => {
-     return amount + item.amount;
-   }, 0);
-
+  const totalItems = basket?.reduce((amount, item) => {
+    return amount + item.amount;
+  }, 0);
 
   return (
     <section className={classes.fixed}>
@@ -50,7 +50,7 @@ function Header() {
             </select>
             <input type="text" name="" id="" placeholder="product search" />
             {/* icon */}
-            <IoSearch size={25} />
+            <IoSearch size={38} />
           </div>
           {/* Right side link */}
           <div className={classes.order_container}>
@@ -63,10 +63,26 @@ function Header() {
                 <option value="">EN</option>
               </select>
             </a>
-            <Link to="/auth">
+            <Link to={!user && "/auth"}>
               <div>
-                <p>Sign In</p>
-                <span>Account and Lists</span>
+                <div>
+                  {user ? (
+                    <>
+                      <p>Hello {user?.email?.split("@")[0]}</p>
+                      <span
+                        onClick={() => signOut(auth)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        SignOut
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <p>Hello, SignIn</p>
+                      <span>Account and Lists</span>
+                    </>
+                  )}
+                </div>
               </div>
             </Link>
             {/* Orders */}
