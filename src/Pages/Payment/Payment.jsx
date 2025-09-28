@@ -42,33 +42,31 @@ function Payment() {
     e.preventDefault();
 
     try {
-      // backend || functions .... constact to the client secret
       setProcessing(true);
-      const response = await axiosInstance({
-        method: "POST",
-        url: `/payment/create?total=${total}`,
+
+      // 1. Ask backend for a PaymentIntent (send total in body)
+      const response = await axiosInstance.post("/payment/create", {
+        total: total,
       });
 
-      // 2. client side react side confirmation
-      const clientSecret = response.data.ClientSecret;
+      // 2. Get clientSecret (make sure casing matches backend)
+      const clientSecret = response.data.clientSecret;
 
+      // 3. Confirm card payment on client
       // eslint-disable-next-line no-unused-vars
       const { paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: element.getElement(CardElement) },
       });
 
-      // 3. after confirmation order firestore database save, clear basket
-      // await db.collection("users").doc("user.uid")
-
+      // 4. After confirmation: save order, clear basket, navigate
       setProcessing(false);
-      navigate("/orders", {state: {msg:"You have placed a new order"}})
+      navigate("/orders", { state: { msg: "You have placed a new order" } });
     } catch (error) {
-      console.log(error);
+      console.error("Payment error:", error);
       setProcessing(false);
     }
-
-    
   };
+
 
   return (
     <Layout>
