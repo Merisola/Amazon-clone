@@ -1,62 +1,54 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Layout from "../../Components/Layout/Layout";
 import classes from "./Orders.module.css";
+import { DataContext } from "../../Components/DataProvider/DataContext";
+import { db } from "../../Utility/firebase";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import ProductCard from "../../Components/Product/ProductCard";
 
 function Orders() {
-  // Hardcoded orders because I don't have firestore access because of billing.
-  const orders = [
-    {
-      id: 1,
-      itemName: "Wireless Headphones",
-      price: "$120",
-      date: "2025-09-20",
-      status: "Delivered",
-    },
-    {
-      id: 2,
-      itemName: "Smartphone Case",
-      price: "$25",
-      date: "2025-09-25",
-      status: "Shipped",
-    },
-    {
-      id: 3,
-      itemName: "Laptop Stand",
-      price: "$45",
-      date: "2025-09-26",
-      status: "Processing",
-    },
-  ];
+  const { state } = useContext(DataContext);
+  const { user } = state;
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      const ordersRef = collection(db, "users", user.uid, "orders");
+      const q = query(ordersRef, orderBy("created", "desc"));
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const ordersData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setOrders(ordersData);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   return (
     <Layout>
-      <div className={classes.warning}>
-        ⚠️ Note: These orders are hardcoded demo data and not linked to a real
-        database.
-      </div>
       <section className={classes.container}>
         <div className={classes.orders_container}>
           <h2>Your Orders</h2>
-          {orders.length > 0 ? (
-            orders.map((order) => (
-              <div key={order.id} className={classes.order_card}>
-                <p>
-                  <strong>{order.itemName}</strong>
-                </p>
-                <p>Price: {order.price}</p>
-                <p>Date: {order.date}</p>
-                <p
-                  className={`${
-                    classes.order_status
-                  } ${order.status.toLowerCase()}`}
-                >
-                  {order.status}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p>No orders yet.</p>
-          )}
+          {
+            orders?.length == 0 && <div>You don't have orders yet.</div>
+          }
+          <div>
+            {orders?.map((eachOrder, i) => {
+              return (
+                <div key={i}>
+                  <hr />
+                  <p>Order Id: {eachOrder?.id}</p>
+                  {eachOrder?.basket?.map((item) => (
+                    <ProductCard product={item} flex={true} key={item.id} />
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </Layout>

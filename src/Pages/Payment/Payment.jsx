@@ -11,11 +11,12 @@ import { ClipLoader } from "react-spinners";
 import { db } from "../../Utility/firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, setDoc } from "firebase/firestore";
+import { Type } from "../../Utility/action.type";
 
 function Payment() {
-  const {
-    state: { user, basket },
-  } = useContext(DataContext);
+ const { state, dispatch } = useContext(DataContext);
+ const { user, basket } = state;
+
 
   const totalItems = basket?.reduce((amount, item) => {
     return amount + item.amount;
@@ -28,7 +29,6 @@ function Payment() {
 
   const navigate = useNavigate();
 
-  
   const [cardError, setCardError] = useState(null);
 
   const handleChange = (e) => {
@@ -55,9 +55,18 @@ function Payment() {
 
       // 3. Confirm card payment on client
       // eslint-disable-next-line no-unused-vars
-      const { paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: element.getElement(CardElement) },
       });
+
+      if (result.error) {
+        // Show error to user
+        setCardError(result.error.message);
+        setProcessing(false);
+        return;
+      }
+
+      const paymentIntent = result.paymentIntent;
 
       // 4. After confirmation: save order, clear basket, navigate
       setProcessing(false);
@@ -68,14 +77,13 @@ function Payment() {
         amount: paymentIntent.amount,
         created: paymentIntent.created,
       });
+
+    dispatch({ type: Type.EMPTY_BASKET });
     } catch (error) {
       console.error("Payment error:", error);
       setProcessing(false);
     }
-
-    
   };
-
 
   return (
     <Layout>
