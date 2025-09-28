@@ -8,8 +8,9 @@ import CurrencyFormat from "../../Components/CurrencyFormat/CurrencyFormat";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { axiosInstance } from "../../API/Axios";
 import { ClipLoader } from "react-spinners";
-// import { db } from "../../Utility/firebase";
+import { db } from "../../Utility/firebase";
 import { useNavigate } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
 
 function Payment() {
   const {
@@ -61,10 +62,18 @@ function Payment() {
       // 4. After confirmation: save order, clear basket, navigate
       setProcessing(false);
       navigate("/orders", { state: { msg: "You have placed a new order" } });
+
+      await setDoc(doc(db, "users", user.uid, "orders", paymentIntent.id), {
+        basket,
+        amount: paymentIntent.amount,
+        created: paymentIntent.created,
+      });
     } catch (error) {
       console.error("Payment error:", error);
       setProcessing(false);
     }
+
+    
   };
 
 
