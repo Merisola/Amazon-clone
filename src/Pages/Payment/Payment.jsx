@@ -8,8 +8,8 @@ import CurrencyFormat from "../../Components/CurrencyFormat/CurrencyFormat";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { axiosInstance } from "../../API/Axios";
 import { ClipLoader } from "react-spinners";
-import { db } from "../../Utility/firebase";
-
+// import { db } from "../../Utility/firebase";
+import { useNavigate } from "react-router-dom";
 
 function Payment() {
   const {
@@ -25,6 +25,9 @@ function Payment() {
     0
   );
 
+  const navigate = useNavigate();
+
+  
   const [cardError, setCardError] = useState(null);
 
   const handleChange = (e) => {
@@ -46,22 +49,25 @@ function Payment() {
         url: `/payment/create?total=${total}`,
       });
 
-      console.log(response.data);
       // 2. client side react side confirmation
       const clientSecret = response.data.ClientSecret;
 
-      const {paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+      // eslint-disable-next-line no-unused-vars
+      const { paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: element.getElement(CardElement) },
       });
 
-      console.log(paymentIntent);
+      // 3. after confirmation order firestore database save, clear basket
+      // await db.collection("users").doc("user.uid")
+
       setProcessing(false);
+      navigate("/orders", {state: {msg:"You have placed a new order"}})
     } catch (error) {
       console.log(error);
       setProcessing(false);
     }
 
-    // 3. after confirmation order firestore database save, clear basket
+    
   };
 
   return (
