@@ -30,6 +30,10 @@ function Orders() {
 
   return (
     <Layout>
+      <div className={classes.warning}>
+        ⚠️ Note: These orders are hardcoded demo data and not linked to a real
+        database.
+      </div>
       <section className={classes.container}>
         <div className={classes.orders_container}>
           <h2>Your Orders</h2>

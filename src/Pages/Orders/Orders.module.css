@@ -67,3 +67,13 @@
   background-color: #fff8e1;
   color: #ef6c00;
 }
+
+.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
